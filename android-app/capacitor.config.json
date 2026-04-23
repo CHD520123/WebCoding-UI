@@ -1,0 +1,14 @@
+{
+  "appId": "com.webcoding.mobile",
+  "appName": "Webcoding Mobile",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "android": {
+    "allowMixedContent": true
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": true
+    }
+  }
+}

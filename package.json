@@ -1,0 +1,16 @@
+{
+  "name": "webcoding",
+  "version": "1.4.2",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "regression": "node scripts/regression.js",
+    "app:install": "npm --prefix android-app install",
+    "app:check": "npm --prefix android-app run check",
+    "app:android:sync": "npm --prefix android-app run cap:sync",
+    "app:android:open": "npm --prefix android-app run cap:open"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}

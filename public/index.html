@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>Webcoding</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+</head>
+<body>
+  <!-- Login -->
+  <div id="login-overlay" class="login-overlay" hidden>
+    <div class="login-box">
+      <div class="login-brand-row">
+        <div class="login-logo">co</div>
+        <div class="login-brand-copy">
+          <strong>Webcoding</strong>
+        </div>
+      </div>
+      <h2>进入工作台</h2>
+      <p>输入访问密码，继续你的远程代理会话。</p>
+      <form id="login-form">
+        <label class="login-field">
+          <span>Access Password</span>
+          <input type="password" id="login-password" placeholder="输入访问密码" autocomplete="current-password" autofocus>
+        </label>
+        <label class="remember-label">
+          <input type="checkbox" id="remember-pw"> 记住密码
+        </label>
+        <button type="submit">进入工作台</button>
+      </form>
+      <div id="login-error" class="login-error" hidden>密码错误</div>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div id="app" class="app" hidden>
+    <header class="app-topbar">
+      <div class="app-topbar-brand">
+        <strong>Webcoding</strong>
+      </div>
+      <div class="app-topbar-actions">
+        <div class="agent-tabs" id="topbar-agent-tabs">
+          <button type="button" class="agent-tab active" data-agent="claude">Claude</button>
+          <button type="button" class="agent-tab" data-agent="codex">Codex</button>
+        </div>
+        <div class="mode-tabs" id="topbar-mode-tabs" title="权限模式">
+          <button type="button" class="mode-tab active" data-mode="yolo" title="YOLO 模式：自动执行所有操作">YOLO</button>
+          <button type="button" class="mode-tab" data-mode="default" title="默认模式：执行前确认">默认</button>
+          <button type="button" class="mode-tab" data-mode="plan" title="Plan 模式：仅规划不执行">Plan</button>
+        </div>
+        <span id="topbar-cost-display" class="cost-display" hidden></span>
+        <select id="mobile-agent-select" class="mobile-topbar-select" title="切换 Agent">
+          <option value="claude">Claude</option>
+          <option value="codex">Codex</option>
+        </select>
+        <select id="mobile-mode-select" class="mobile-topbar-select" title="权限模式">
+          <option value="yolo">YOLO</option>
+          <option value="default">默认</option>
+          <option value="plan">Plan</option>
+        </select>
+        <button id="git-panel-btn" class="git-topbar-btn topbar-icon-btn" title="Git 面板" aria-label="Git">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+          <span id="git-badge" class="git-badge" hidden></span>
+        </button>
+        <button id="settings-btn" class="settings-btn topbar-icon-btn" title="设置">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="app-workspace">
+      <!-- Sidebar -->
+      <aside id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+          <div class="new-chat-split">
+            <button id="new-chat-btn" class="new-chat-btn">新建/打开项目</button>
+            <button id="new-chat-arrow" class="new-chat-arrow" title="更多">▾</button>
+          </div>
+          <div id="new-chat-dropdown" class="new-chat-dropdown" hidden>
+            <hr class="dropdown-divider">
+            <button id="import-session-btn">导入本地 CLI 会话</button>
+          </div>
+        </div>
+        <div id="session-list" class="session-list"></div>
+      </aside>
+
+      <div id="sidebar-resizer" class="sidebar-resizer" aria-hidden="true"></div>
+      <div id="sidebar-overlay" class="sidebar-overlay" hidden></div>
+
+      <div class="workspace-main">
+        <!-- Chat -->
+        <main class="chat-main">
+          <div class="chat-stage-shell">
+            <header class="chat-header">
+              <button id="menu-btn" class="menu-btn" title="菜单">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+              </button>
+              <div class="chat-header-copy">
+                <span id="chat-title" class="chat-title">新会话</span>
+                <div id="chat-agent-context" class="chat-agent-context">当前对话：Claude · 新建默认：Claude</div>
+                <div id="chat-presence-strip" class="chat-presence-strip" hidden></div>
+              </div>
+              <div class="chat-toolbar">
+                <span id="chat-runtime-state" class="chat-runtime-state" hidden>运行中</span>
+                <select id="mode-select" class="mode-select" title="权限模式" hidden>
+                  <option value="yolo">YOLO</option>
+                  <option value="default">默认</option>
+                  <option value="plan">Plan</option>
+                </select>
+              </div>
+            </header>
+
+            <div class="messages-wrap">
+              <div id="messages" class="messages">
+                <div class="welcome-msg">
+                  <div class="welcome-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  </div>
+                  <h3>欢迎使用 Webcoding</h3>
+                  <p>开始与 Claude 对话</p>
+                </div>
+              </div>
+              <div class="custom-scrollbar" id="custom-scrollbar">
+                <div class="custom-scrollbar-thumb" id="custom-scrollbar-thumb"></div>
+              </div>
+            </div>
+
+            <!-- Slash command menu -->
+            <div id="cmd-menu" class="cmd-menu" hidden></div>
+
+            <div class="input-area">
+              <div id="attachment-tray" class="attachment-tray" hidden></div>
+              <div class="input-wrapper">
+                <input id="image-upload-input" type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden>
+                <button id="attach-btn" class="attach-btn" title="上传图片" type="button">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21.44 11.05l-8.49 8.49a6 6 0 1 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                  </svg>
+                </button>
+                <textarea id="msg-input" rows="1" placeholder="输入消息… 输入 / 查看指令" autocomplete="off"></textarea>
+                <button id="send-btn" class="send-btn" title="发送">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                  </svg>
+                </button>
+                <button id="abort-btn" class="abort-btn" title="停止" hidden>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <rect x="6" y="6" width="12" height="12" rx="2"></rect>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </main>
+
+        <aside id="workspace-insights" class="workspace-insights" aria-label="工作台摘要">
+          <div class="workspace-insights-scroll">
+            <div id="workspace-insights-content" class="workspace-insights-content"></div>
+          </div>
+        </aside>
+
+        <aside id="git-panel" class="git-panel" aria-label="Git 面板">
+          <div class="git-panel-header">
+            <span class="git-panel-title">Git</span>
+            <div class="git-panel-tabs" id="git-panel-tabs">
+              <button class="git-panel-tab active" data-git-view="status">状态</button>
+              <button class="git-panel-tab" data-git-view="diff">Diff</button>
+              <button class="git-panel-tab" data-git-view="log">Log</button>
+              <button class="git-panel-tab" data-git-view="commit">提交</button>
+            </div>
+            <button class="git-panel-close" id="git-panel-close" title="关闭">✕</button>
+          </div>
+          <div class="git-panel-toolbar" id="git-panel-toolbar">
+            <button class="git-toolbar-btn primary" data-workspace-action="refresh-git" title="刷新 Git 状态">刷新</button>
+            <button class="git-toolbar-btn" data-workspace-action="git-add-all" title="暂存全部改动">全部暂存</button>
+            <span class="git-toolbar-sep"></span>
+            <button class="git-toolbar-btn" data-workspace-action="git-commit" title="进入提交视图">去提交</button>
+            <button class="git-toolbar-btn" data-workspace-action="git-checkout" title="切换分支">切分支</button>
+            <button class="git-toolbar-btn" data-workspace-action="git-create-branch" title="新建分支">新建分支</button>
+          </div>
+          <div class="git-panel-scroll">
+            <div id="git-panel-content" class="git-panel-body"></div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <div id="session-loading-overlay" class="session-loading-overlay" hidden aria-live="polite" aria-hidden="true">
+    <div class="session-loading-card" role="status" aria-busy="true">
+      <div class="session-loading-badge">Session</div>
+      <div class="session-loading-title">会话加载中</div>
+      <div id="session-loading-label" class="session-loading-label">正在整理消息与上下文…</div>
+      <div class="session-loading-bar">
+        <span class="session-loading-bar-fill"></span>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.1/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="/qrcode.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

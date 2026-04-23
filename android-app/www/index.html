@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Webcoding Mobile</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div id="app" class="mobile-app">
+    <section id="connections-screen" class="screen screen-connections">
+      <div class="hero-card">
+        <div class="hero-kicker">Android Shell</div>
+        <h1>Webcoding Mobile</h1>
+        <p>连接你的本地 Webcoding 服务，继续 PC 端会话，并同步当前控制状态。</p>
+        <div class="hero-actions">
+          <button id="add-connection-btn" class="btn btn-primary" type="button">新增连接</button>
+          <button id="import-json-btn" class="btn" type="button">导入 JSON</button>
+          <button id="scan-qr-btn" class="btn" type="button">扫码导入</button>
+        </div>
+      </div>
+
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-kicker">连接列表</div>
+            <h2>选择一个连接</h2>
+          </div>
+          <span id="connection-count" class="badge">0</span>
+        </div>
+        <div id="connection-list" class="connection-list"></div>
+      </section>
+    </section>
+
+    <section id="workspace-screen" class="screen screen-workspace" hidden>
+      <header class="workspace-topbar">
+        <div class="workspace-topbar-copy">
+          <div id="workspace-connection-name" class="workspace-title">未连接</div>
+          <div id="workspace-status-line" class="workspace-subtitle">等待连接</div>
+        </div>
+        <div class="workspace-topbar-actions">
+          <button id="remote-task-btn" class="icon-btn" type="button" aria-label="远程任务">任务</button>
+          <button id="disconnect-btn" class="icon-btn" type="button" aria-label="断开连接">断开</button>
+        </div>
+      </header>
+
+      <main class="workspace-main">
+        <section id="sessions-tab" class="tab-panel">
+          <section id="session-list-view" class="session-view">
+            <div class="session-banner-row">
+              <button id="new-session-btn" class="btn btn-primary compact" type="button">新建会话</button>
+              <button id="remote-task-inline-btn" class="btn compact" type="button">远程任务</button>
+            </div>
+
+            <section class="panel compact-panel session-directory-panel">
+              <div class="panel-header">
+                <div>
+                  <div class="panel-kicker">会话</div>
+                  <h2>同步中的工作区</h2>
+                </div>
+                <span id="session-count" class="badge">0</span>
+              </div>
+              <p class="session-list-hint">点击一个会话进入独立工作区，消息、工具输出和输入区会在下一页展开。</p>
+              <div id="session-list" class="session-list"></div>
+            </section>
+          </section>
+
+          <section id="session-detail-view" class="session-view session-detail-view" hidden>
+            <div class="detail-view-topbar">
+              <button id="session-back-btn" class="btn compact" type="button">返回会话</button>
+              <div id="session-runtime-summary" class="runtime-summary">未打开会话</div>
+            </div>
+
+            <section class="panel chat-panel session-focus-panel">
+              <div class="chat-panel-header session-focus-header">
+                <div class="session-focus-copy">
+                  <div id="current-session-title" class="chat-title">尚未选择会话</div>
+                  <div id="current-session-meta" class="chat-meta">连接后可浏览 PC 端会话并继续。</div>
+                </div>
+                <div class="chat-selectors">
+                  <select id="agent-select" class="compact-select" aria-label="Agent">
+                    <option value="claude">Claude</option>
+                    <option value="codex">Codex</option>
+                  </select>
+                  <select id="mode-select" class="compact-select" aria-label="模式">
+                    <option value="yolo">YOLO</option>
+                    <option value="default">默认</option>
+                    <option value="plan">Plan</option>
+                  </select>
+                </div>
+              </div>
+              <div id="session-state-banner" class="session-state-banner"></div>
+              <div id="notice-list" class="notice-list"></div>
+              <div id="message-list" class="message-list"></div>
+              <form id="composer-form" class="composer-form">
+                <textarea id="composer-input" rows="1" placeholder="输入消息，发送后自动接管控制权"></textarea>
+                <div class="composer-actions">
+                  <button id="abort-btn" class="btn" type="button">停止</button>
+                  <button id="send-btn" class="btn btn-primary" type="submit">发送</button>
+                </div>
+              </form>
+            </section>
+          </section>
+        </section>
+
+        <section id="settings-tab" class="tab-panel" hidden>
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <div class="panel-kicker">主题</div>
+                <h2>视觉风格</h2>
+              </div>
+            </div>
+            <label class="field">
+              <span>主题</span>
+              <select id="theme-select">
+                <option value="cc-web">cc-web</option>
+                <option value="webcoding">webcoding</option>
+              </select>
+            </label>
+          </section>
+
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <div class="panel-kicker">当前连接</div>
+                <h2>连接详情</h2>
+              </div>
+            </div>
+            <div id="connection-detail-card" class="detail-card"></div>
+            <div class="stack-actions">
+              <button id="reconnect-btn" class="btn btn-primary" type="button">重新连接</button>
+              <button id="clear-token-btn" class="btn" type="button">清除登录 Token</button>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <div class="panel-kicker">服务状态</div>
+                <h2>健康检查</h2>
+              </div>
+            </div>
+            <div id="health-card" class="detail-card"></div>
+          </section>
+        </section>
+      </main>
+
+      <nav class="bottom-tabs">
+        <button id="tab-sessions-btn" class="bottom-tab active" type="button">会话</button>
+        <button id="tab-settings-btn" class="bottom-tab" type="button">设置</button>
+      </nav>
+    </section>
+
+    <div id="modal-backdrop" class="modal-backdrop" hidden></div>
+
+    <section id="connection-modal" class="modal-sheet" hidden>
+      <div class="modal-header">
+        <div>
+          <div class="panel-kicker">连接</div>
+          <h2 id="connection-modal-title">新增连接</h2>
+        </div>
+        <button id="close-connection-modal-btn" class="icon-btn" type="button">关闭</button>
+      </div>
+      <form id="connection-form" class="sheet-form">
+        <input id="connection-id-input" type="hidden">
+        <label class="field">
+          <span>名称</span>
+          <input id="connection-name-input" type="text" placeholder="例如：家里电脑 Tunnel">
+        </label>
+        <label class="field">
+          <span>Base URL</span>
+          <input id="connection-url-input" type="text" placeholder="https://example.trycloudflare.com">
+        </label>
+        <label class="field">
+          <span>访问密码</span>
+          <input id="connection-password-input" type="password" placeholder="如果服务设置了密码，就填这里">
+        </label>
+        <div class="stack-actions">
+          <button class="btn btn-primary" type="submit">保存连接</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="import-modal" class="modal-sheet" hidden>
+      <div class="modal-header">
+        <div>
+          <div class="panel-kicker">导入</div>
+          <h2>导入连接 JSON</h2>
+        </div>
+        <button id="close-import-modal-btn" class="icon-btn" type="button">关闭</button>
+      </div>
+      <div class="sheet-form">
+        <label class="field">
+          <span>结构化 JSON</span>
+          <textarea id="import-json-input" rows="10" placeholder="粘贴二维码里的 JSON，或批量连接 JSON"></textarea>
+        </label>
+        <div class="stack-actions">
+          <button id="import-json-confirm-btn" class="btn btn-primary" type="button">导入</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="scanner-modal" class="modal-sheet" hidden>
+      <div class="modal-header">
+        <div>
+          <div class="panel-kicker">扫码</div>
+          <h2>二维码导入</h2>
+        </div>
+        <button id="close-scanner-modal-btn" class="icon-btn" type="button">关闭</button>
+      </div>
+      <div class="sheet-form">
+        <div id="scanner-status" class="scanner-status">准备打开摄像头…</div>
+        <video id="scanner-video" class="scanner-video" playsinline muted></video>
+        <label class="field">
+          <span>扫码回退输入</span>
+          <textarea id="scanner-fallback-input" rows="6" placeholder="设备不支持扫码时，可以直接粘贴二维码里的 JSON"></textarea>
+        </label>
+        <div class="stack-actions">
+          <button id="scanner-import-fallback-btn" class="btn btn-primary" type="button">按输入内容导入</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="remote-task-modal" class="modal-sheet" hidden>
+      <div class="modal-header">
+        <div>
+          <div class="panel-kicker">远程任务</div>
+          <h2>SSH 任务草稿</h2>
+        </div>
+        <button id="close-remote-task-modal-btn" class="icon-btn" type="button">关闭</button>
+      </div>
+      <form id="remote-task-form" class="sheet-form">
+        <label class="field">
+          <span>SSH 主机</span>
+          <input id="remote-host-input" type="text" placeholder="例如：prod-ubuntu">
+        </label>
+        <label class="field">
+          <span>remoteCwd</span>
+          <input id="remote-cwd-input" type="text" placeholder="/home/ubuntu/project">
+        </label>
+        <label class="field">
+          <span>任务内容</span>
+          <textarea id="remote-prompt-input" rows="6" placeholder="描述要在远程主机执行的任务"></textarea>
+        </label>
+        <div id="remote-task-note" class="inline-note">当前先保存草稿和入口结构，后续再接服务端 SSH 执行接口。</div>
+        <div class="stack-actions">
+          <button class="btn btn-primary" type="submit">保存草稿</button>
+        </div>
+      </form>
+    </section>
+
+    <div id="toast" class="toast" hidden></div>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
